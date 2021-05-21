@@ -74,7 +74,7 @@ describe('Basic user flow for SPA ', () => {
 
   it('Test7: Clicking the settings icon, new URL should contain #settings', async () => {
     // implement test7: Clicking on the settings icon should update the URL to contain “/#settings”
-    await page.click('[alt="settings"]')
+    await page.click('[alt="settings"]');
     expect(page.url()).toMatch('/#settings');
   });
 
@@ -103,7 +103,9 @@ describe('Basic user flow for SPA ', () => {
   // define and implement test11: Clicking the back button once should bring the user back to the home page
   it ('Test11: Clicking the back button once should bring the user back to the home page', async() => {
     await page.goBack();
-    expect(page.url()).toBe('http://127.0.0.1:5500/');
+    //expect(page.url()).toBe('http://127.0.0.1:5500/');
+    expect(page.url()).not.toMatch('#settings');
+    expect(page.url()).not.toMatch('#entry');
   });
 
   // define and implement test12: When the user if on the homepage, the header title should be “Journal Entries”
@@ -149,11 +151,33 @@ describe('Basic user flow for SPA ', () => {
   });
 
   // create your own test 17
-
+  it ('Test17: Clicking the heading should bring the user back to the homepage', async() => {
+    await page.click('body > header > h1');
+    expect(page.url()).not.toMatch('#settings');
+    expect(page.url()).not.toMatch('#entry');
+  });
   // create your own test 18
-
+  it ('Test18: Verify the url is correct when clicking on the fourth entry', async() => {
+    await page.click('journal-entry + journal-entry + journal-entry + journal-entry');
+    expect(page.url()).toMatch('/#entry4');
+  });
   // create your own test 19
-
+  it ('Test19: Verify the title is current when clicking on the fourth entry', async() => {
+    const myHeader = await page.$eval('h1', (h1) => {
+      return h1.innerHTML;
+    });
+    expect(myHeader).toBe('Entry 4');
+  });
   // create your own test 20
-  
+  it ('Test20: Verify the entry page contents is correct when clicking on the fourth entry', async() => {
+    const myEntry = await page.$eval('entry-page', (entry) => {
+      return entry.entry;
+    });
+    expect(myEntry.title).toBe("You're a wizard, Harry");
+    expect(myEntry.date).toBe("4/28/2021");
+    expect(myEntry.content).toBe("Hmm, difficult. VERY difficult. Plenty of courage, I see. Not a bad mind, either. There's talent, oh yes. And a thirst to prove yourself. But where to put you? Not Slytherin. Not Slytherin. Not Slytherin, eh? Are you sure? You could be great, you know. It's all here in your head. And Slytherin will help you on the way to greatness, there's no doubt about that. No? Please, please. Anything but Slytherin, anything but Slytherin. Well if you're sure, better be... GRYFFINDOR!");
+    expect(myEntry.image.src).toBe("https://w7w5t4b3.rocketcdn.me/wp-content/uploads/2019/01/harry-potter-sorting-hat-wrong.jpg");
+    expect(myEntry.image.alt).toBe("harry looking up at the sorting hat");
+    expect(myEntry.audio).toBe("https://drive.google.com/uc?export=download&id=1Orwnly-OMhNt83tb-SAWt6Y3S6AYQgkk");
+  });
 });
